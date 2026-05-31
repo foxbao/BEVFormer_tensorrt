@@ -610,7 +610,7 @@ __device__ void ms_deform_attn_im2col_bilinear_int8_h2_(
 
 template <typename scalar_t>
 __global__ void ms_deformable_im2col_gpu_kernel(
-    const int n, const scalar_t *data_value, const int32_t *data_spatial_shapes,
+    const int n, const scalar_t *data_value, const TRT_INT *data_spatial_shapes,
     const scalar_t *data_reference_points,
     const scalar_t *data_sampling_offsets, const scalar_t *data_attn_weight,
     const int spatial_size, const int num_heads, const int channels,
@@ -689,7 +689,7 @@ __global__ void ms_deformable_im2col_gpu_kernel(
 
 template <>
 __global__ void ms_deformable_im2col_gpu_kernel(
-    const int n, const __half *data_value, const int32_t *data_spatial_shapes,
+    const int n, const __half *data_value, const TRT_INT *data_spatial_shapes,
     const __half *data_reference_points, const __half *data_sampling_offsets,
     const __half *data_attn_weight, const int spatial_size, const int num_heads,
     const int channels, const int num_levels, const int num_query,
@@ -770,7 +770,7 @@ __global__ void ms_deformable_im2col_gpu_kernel(
 }
 
 __global__ void ms_deformable_im2col_gpu_kernel_h2(
-    const int n, const __half2 *data_value, const int32_t *data_spatial_shapes,
+    const int n, const __half2 *data_value, const TRT_INT *data_spatial_shapes,
     const __half2 *data_reference_points, const __half2 *data_sampling_offsets,
     const __half *data_attn_weight, const int spatial_size, const int num_heads,
     const int channels, const int num_levels, const int num_query,
@@ -848,7 +848,7 @@ __global__ void ms_deformable_im2col_gpu_kernel_h2(
 template <typename scalar_t>
 __global__ void ms_deformable_im2col_gpu_kernel_int8(
     const int n, const int8_4 *data_value, float scale_value,
-    const int32_t *data_spatial_shapes, const scalar_t *data_reference_points,
+    const TRT_INT *data_spatial_shapes, const scalar_t *data_reference_points,
     const int8_4 *data_sampling_offsets, float scale_offset,
     const int8_4 *data_attn_weight, float scale_weight, const int spatial_size,
     const int num_heads, const int channels, const int num_levels,
@@ -957,7 +957,7 @@ __global__ void ms_deformable_im2col_gpu_kernel_int8(
 template <>
 __global__ void ms_deformable_im2col_gpu_kernel_int8(
     const int n, const int8_4 *data_value, float scale_value,
-    const int32_t *data_spatial_shapes, const __half2 *data_reference_points,
+    const TRT_INT *data_spatial_shapes, const __half2 *data_reference_points,
     const int8_4 *data_sampling_offsets, float scale_offset,
     const int8_4 *data_attn_weight, float scale_weight, const int spatial_size,
     const int num_heads, const int channels, const int num_levels,
@@ -1105,7 +1105,7 @@ __global__ void ms_deformable_im2col_gpu_kernel_int8(
 
 template <typename scalar_t>
 void ms_deformable_im2col_cuda(const scalar_t *data_value,
-                               const int32_t *data_spatial_shapes,
+                               const TRT_INT *data_spatial_shapes,
                                const scalar_t *data_reference_points,
                                const scalar_t *data_sampling_offsets,
                                const scalar_t *data_attn_weight,
@@ -1129,7 +1129,7 @@ void ms_deformable_im2col_cuda(const scalar_t *data_value,
 
 template <>
 void ms_deformable_im2col_cuda(
-    const __half *data_value, const int32_t *data_spatial_shapes,
+    const __half *data_value, const TRT_INT *data_spatial_shapes,
     const __half *data_reference_points, const __half *data_sampling_offsets,
     const __half *data_attn_weight, const int batch_size,
     const int spatial_size, const int num_heads, const int channels,
@@ -1149,7 +1149,7 @@ void ms_deformable_im2col_cuda(
 }
 
 void ms_deformable_im2col_cuda_h2(
-    const __half2 *data_value, const int32_t *data_spatial_shapes,
+    const __half2 *data_value, const TRT_INT *data_spatial_shapes,
     const __half2 *data_reference_points, const __half2 *data_sampling_offsets,
     const __half *data_attn_weight, const int batch_size,
     const int spatial_size, const int num_heads, int channels,
@@ -1171,7 +1171,7 @@ void ms_deformable_im2col_cuda_h2(
 template <typename scalar_t>
 void ms_deformable_im2col_cuda_int8(
     const int8_4 *data_value, float scale_value,
-    const int32_t *data_spatial_shapes, const scalar_t *data_reference_points,
+    const TRT_INT *data_spatial_shapes, const scalar_t *data_reference_points,
     const int8_4 *data_sampling_offsets, float scale_offset,
     const int8_4 *data_attn_weight, float scale_weight, const int batch_size,
     const int spatial_size, const int num_heads, int channels,
@@ -1196,7 +1196,7 @@ void ms_deformable_im2col_cuda_int8(
 template <>
 void ms_deformable_im2col_cuda_int8(
     const int8_4 *data_value, float scale_value,
-    const int32_t *data_spatial_shapes, const __half2 *data_reference_points,
+    const TRT_INT *data_spatial_shapes, const __half2 *data_reference_points,
     const int8_4 *data_sampling_offsets, float scale_offset,
     const int8_4 *data_attn_weight, float scale_weight, const int batch_size,
     const int spatial_size, const int num_heads, int channels,
@@ -1218,7 +1218,7 @@ void ms_deformable_im2col_cuda_int8(
 }
 
 template void ms_deformable_im2col_cuda<float>(
-    const float *data_value, const int32_t *data_spatial_shapes,
+    const float *data_value, const TRT_INT *data_spatial_shapes,
     const float *data_reference_points, const float *data_sampling_offsets,
     const float *data_attn_weight, const int batch_size, const int spatial_size,
     const int num_heads, const int channels, const int num_levels,
@@ -1226,7 +1226,7 @@ template void ms_deformable_im2col_cuda<float>(
     float *data_col, cudaStream_t stream);
 
 template void ms_deformable_im2col_cuda<__half>(
-    const __half *data_value, const int32_t *data_spatial_shapes,
+    const __half *data_value, const TRT_INT *data_spatial_shapes,
     const __half *data_reference_points, const __half *data_sampling_offsets,
     const __half *data_attn_weight, const int batch_size,
     const int spatial_size, const int num_heads, const int channels,
@@ -1235,7 +1235,7 @@ template void ms_deformable_im2col_cuda<__half>(
 
 template void ms_deformable_im2col_cuda_int8<float>(
     const int8_4 *data_value, float scale_value,
-    const int32_t *data_spatial_shapes, const float *data_reference_points,
+    const TRT_INT *data_spatial_shapes, const float *data_reference_points,
     const int8_4 *data_sampling_offsets, float scale_offset,
     const int8_4 *data_attn_weight, float scale_weight, const int batch_size,
     const int spatial_size, const int num_heads, int channels,
@@ -1245,7 +1245,7 @@ template void ms_deformable_im2col_cuda_int8<float>(
 
 template void ms_deformable_im2col_cuda_int8<__half2>(
     const int8_4 *data_value, float scale_value,
-    const int32_t *data_spatial_shapes, const __half2 *data_reference_points,
+    const TRT_INT *data_spatial_shapes, const __half2 *data_reference_points,
     const int8_4 *data_sampling_offsets, float scale_offset,
     const int8_4 *data_attn_weight, float scale_weight, const int batch_size,
     const int spatial_size, const int num_heads, int channels,

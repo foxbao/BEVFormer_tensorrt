@@ -59,6 +59,9 @@ int32_t InversePlugin::enqueue(const nvinfer1::PluginTensorDesc *inputDesc,
                                const nvinfer1::PluginTensorDesc *outputDesc,
                                const void *const *inputs, void *const *outputs,
                                void *workspace, cudaStream_t stream) noexcept {
+  #if NV_TENSORRT_MAJOR >= 10 && NV_TENSORRT_MINOR >= 4
+    cublasSetStream(m_cublas_handle, stream);
+  #endif
   auto data_type = inputDesc[0].type;
   switch (data_type) {
   case DataType::kFLOAT:
@@ -103,6 +106,9 @@ IPluginV2DynamicExt *InversePlugin::clone() const noexcept {
     auto *plugin = new InversePlugin();
     plugin->setPluginNamespace(mPluginNamespace.c_str());
     plugin->initialize();
+    #if NV_TENSORRT_MAJOR >= 10 && NV_TENSORRT_MINOR >= 4
+      plugin->m_cublas_handle = m_cublas_handle;
+    #endif
     return plugin;
   } catch (std::exception const &e) {
     caughtError(e);
@@ -128,7 +134,11 @@ DataType InversePlugin::getOutputDataType(int32_t index,
 void InversePlugin::attachToContext(
     cudnnContext *cudnn, cublasContext *cublas,
     nvinfer1::IGpuAllocator *allocator) noexcept {
-  m_cublas_handle = cublas;
+  #if NV_TENSORRT_MAJOR >= 10 && NV_TENSORRT_MINOR >= 4
+    cublasCreate(&m_cublas_handle);
+  #else
+    m_cublas_handle = cublas;
+  #endif
 }
 
 void InversePlugin::detachFromContext() noexcept {}

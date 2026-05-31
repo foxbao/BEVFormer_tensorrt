@@ -8,10 +8,12 @@
 #include "cuda_int8.h"
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
+#include <type_traits>
+typedef std::conditional<NV_TENSORRT_MAJOR<10, int32_t, int64_t>::type TRT_INT;
 
 template <typename T>
 void ms_deformable_im2col_cuda(
-    const T *data_value, const int32_t *data_spatial_shapes,
+    const T *data_value, const TRT_INT *data_spatial_shapes,
     const T *data_reference_points, const T *data_sampling_offsets,
     const T *data_attn_weight, const int batch_size, const int spatial_size,
     const int num_heads, const int channels, const int num_levels,
@@ -19,7 +21,7 @@ void ms_deformable_im2col_cuda(
     T *data_col, cudaStream_t stream);
 
 void ms_deformable_im2col_cuda_h2(
-    const __half2 *data_value, const int32_t *data_spatial_shapes,
+    const __half2 *data_value, const TRT_INT *data_spatial_shapes,
     const __half2 *data_reference_points, const __half2 *data_sampling_offsets,
     const __half *data_attn_weight, const int batch_size,
     const int spatial_size, const int num_heads, int channels,
@@ -29,7 +31,7 @@ void ms_deformable_im2col_cuda_h2(
 template <typename T>
 void ms_deformable_im2col_cuda_int8(
     const int8_4 *data_value, float scale_value,
-    const int32_t *data_spatial_shapes, const T *data_reference_points,
+    const TRT_INT *data_spatial_shapes, const T *data_reference_points,
     const int8_4 *data_sampling_offsets, float scale_offset,
     const int8_4 *data_attn_weight, float scale_weight, const int batch_size,
     const int spatial_size, const int num_heads, int channels,

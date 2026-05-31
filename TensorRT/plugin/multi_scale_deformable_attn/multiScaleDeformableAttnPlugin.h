@@ -10,6 +10,14 @@
 #include <NvInferPlugin.h>
 #include <string>
 #include <vector>
+#include <type_traits>
+
+#if NV_TENSORRT_MAJOR < 10
+  #define TRT_kINT nvinfer1::DataType::kINT32
+#else
+  #define TRT_kINT nvinfer1::DataType::kINT64
+#endif
+typedef std::conditional<NV_TENSORRT_MAJOR<10, int32_t, int64_t>::type TRT_INT;
 
 namespace trt_plugin {
 

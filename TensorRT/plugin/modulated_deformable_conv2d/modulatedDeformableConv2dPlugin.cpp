@@ -66,7 +66,11 @@ DimsExprs ModulatedDeformableConv2dPlugin::getOutputDimensions(
   return outputDim;
 }
 
-int32_t ModulatedDeformableConv2dPlugin::initialize() noexcept { return 0; }
+int32_t ModulatedDeformableConv2dPlugin::initialize() noexcept { 
+#if NV_TENSORRT_MAJOR >= 10 && NV_TENSORRT_MINOR >= 4
+#endif
+  return 0; 
+}
 
 void ModulatedDeformableConv2dPlugin::terminate() noexcept {}
 
@@ -118,6 +122,9 @@ int32_t ModulatedDeformableConv2dPlugin::enqueue(
     const nvinfer1::PluginTensorDesc *inputDesc,
     const nvinfer1::PluginTensorDesc *outputDesc, const void *const *inputs,
     void *const *outputs, void *workSpace, cudaStream_t stream) noexcept {
+#if NV_TENSORRT_MAJOR >= 10 && NV_TENSORRT_MINOR >= 4
+  cublasSetStream(m_cublas_handle, stream);
+#endif
   int batch = inputDesc[0].dims.d[0];
   int channels = inputDesc[0].dims.d[1];
   int height = inputDesc[0].dims.d[2];
@@ -286,7 +293,11 @@ DataType ModulatedDeformableConv2dPlugin::getOutputDataType(
 void ModulatedDeformableConv2dPlugin::attachToContext(
     cudnnContext *cudnn, cublasContext *cublas,
     nvinfer1::IGpuAllocator *allocator) noexcept {
+#if NV_TENSORRT_MAJOR >= 10 && NV_TENSORRT_MINOR >= 4
+  cublasCreate(&m_cublas_handle);
+#else
   m_cublas_handle = cublas;
+#endif
 }
 
 void ModulatedDeformableConv2dPlugin::detachFromContext() noexcept {}

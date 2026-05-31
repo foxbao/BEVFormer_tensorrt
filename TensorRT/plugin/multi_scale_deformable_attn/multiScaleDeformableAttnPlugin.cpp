@@ -96,7 +96,7 @@ int32_t MultiScaleDeformableAttnPlugin::enqueue(
   switch (data_type) {
   case DataType::kFLOAT:
     ms_deformable_im2col_cuda<float>(
-        (float *)inputs[0], (int32_t *)inputs[1], (float *)inputs[2],
+        (float *)inputs[0], (TRT_INT *)inputs[1], (float *)inputs[2],
         (float *)inputs[3], (float *)inputs[4], batch, spatial_size, num_heads,
         channels, num_levels, num_query, num_point, points_per_group,
         (float *)outputs[0], stream);
@@ -104,13 +104,13 @@ int32_t MultiScaleDeformableAttnPlugin::enqueue(
   case DataType::kHALF:
     if (use_h2) {
       ms_deformable_im2col_cuda_h2(
-          (__half2 *)inputs[0], (int32_t *)inputs[1], (__half2 *)inputs[2],
+          (__half2 *)inputs[0], (TRT_INT *)inputs[1], (__half2 *)inputs[2],
           (__half2 *)inputs[3], (__half *)inputs[4], batch, spatial_size,
           num_heads, channels, num_levels, num_query, num_point,
           points_per_group, (__half2 *)outputs[0], stream);
     } else {
       ms_deformable_im2col_cuda<__half>(
-          (__half *)inputs[0], (int32_t *)inputs[1], (__half *)inputs[2],
+          (__half *)inputs[0], (TRT_INT *)inputs[1], (__half *)inputs[2],
           (__half *)inputs[3], (__half *)inputs[4], batch, spatial_size,
           num_heads, channels, num_levels, num_query, num_point,
           points_per_group, (__half *)outputs[0], stream);
@@ -119,14 +119,14 @@ int32_t MultiScaleDeformableAttnPlugin::enqueue(
   case DataType::kINT8:
     if (data_type_rp == DataType::kHALF) {
       ms_deformable_im2col_cuda_int8<__half2>(
-          (int8_4 *)inputs[0], scale_value, (int32_t *)inputs[1],
+          (int8_4 *)inputs[0], scale_value, (TRT_INT *)inputs[1],
           (__half2 *)inputs[2], (int8_4 *)inputs[3], scale_offset,
           (int8_4 *)inputs[4], scale_weight, batch, spatial_size, num_heads,
           channels, num_levels, num_query, num_point, points_per_group,
           (int8_4 *)outputs[0], scale_out, stream);
     } else {
       ms_deformable_im2col_cuda_int8<float>(
-          (int8_4 *)inputs[0], scale_value, (int32_t *)inputs[1],
+          (int8_4 *)inputs[0], scale_value, (TRT_INT *)inputs[1],
           (float *)inputs[2], (int8_4 *)inputs[3], scale_offset,
           (int8_4 *)inputs[4], scale_weight, batch, spatial_size, num_heads,
           channels, num_levels, num_query, num_point, points_per_group,
@@ -163,7 +163,7 @@ bool MultiScaleDeformableAttnPlugin::supportsFormatCombination(
            (inOut[pos].type == nvinfer1::DataType::kINT8 &&
             inOut[pos].format == nvinfer1::TensorFormat::kLINEAR && use_int8);
   case 1:
-    return inOut[pos].type == nvinfer1::DataType::kINT32 &&
+    return inOut[pos].type == TRT_kINT && 
            inOut[pos].format == nvinfer1::TensorFormat::kLINEAR;
   case 2:
     if (inOut[0].type == nvinfer1::DataType::kFLOAT ||
